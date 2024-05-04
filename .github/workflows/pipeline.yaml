@@ -48,6 +48,21 @@ jobs:
           aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
           aws-region: ${{ env.AWS_REGION }}
       
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+      - name: list
+        run: ls
+      - name: script
+        run: ls dist/my-app
+
       - name: Deploy static site to S3 bucket
-        run: aws s3 sync . s3://${{ env.BUCKET_NAME }} --delete
+        run: aws s3 sync dist/my-app/ s3://${{ env.BUCKET_NAME }} --delete
   
