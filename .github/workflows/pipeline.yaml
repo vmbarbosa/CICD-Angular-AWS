@@ -32,7 +32,7 @@ jobs:
       - name: list
         run: ls
       - name: script
-        run: ls dist/myapp
+        run: ls dist/my-app
 
   Deploy-Production:
     runs-on: ubuntu-latest
