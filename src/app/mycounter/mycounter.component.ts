@@ -15,7 +15,9 @@ export class MycounterComponent {
     if(op){
       this.num = num +1
     }else{
-      this.num = num - 1
+      if(num>0){
+        this.num = num - 1
+      }
     }
   }
 

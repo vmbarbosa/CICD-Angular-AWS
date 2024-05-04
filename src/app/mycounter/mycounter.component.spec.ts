@@ -30,4 +30,14 @@ describe('MycounterComponent', () => {
     expect(component.num).toBe(result)
   })
 
+  it('should substract 1 to number when the - button is clicked',()=>{
+    component.counter(1,false)
+    expect(component.num).toBe(0)
+  })
+
+  it('should not allow negative numbers',()=>{
+    component.counter(0,false)
+    expect(component.num).toBe(0)
+  })
+
 });
