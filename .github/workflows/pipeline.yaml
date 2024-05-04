@@ -3,14 +3,14 @@ env:
   AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
   AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET_KEY}}
   AWS_REGION: "us-east-1"
-  BUCKET_NAME: "my-cicd-bucket-uninorte"
+  BUCKET_NAME_PROD: "my-cicd-bucket-uninorte"
+  BUCKET_NAME_TEST: "my-cicd-bucket-uninorte-test"
 on:
   push:
     branches:
       - main
       - testing
       - production
-      - feature/pipelines
 jobs:
   Build:
     runs-on: ubuntu-latest
@@ -34,9 +34,29 @@ jobs:
       - name: script
         run: ls dist/my-app
 
-  Deploy-Production:
-    runs-on: ubuntu-latest
+  Test:
     needs: [Build]
+    runs-on: ubuntu-latest
+    steps:
+    
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run test
+
+   Deploy-Testing:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/testing'
+    needs: [Test]
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -58,11 +78,36 @@ jobs:
 
       - name: Build
         run: npm run build
-      - name: list
-        run: ls
-      - name: script
-        run: ls dist/my-app
 
       - name: Deploy static site to S3 bucket
-        run: aws s3 sync dist/my-app/browser/ s3://${{ env.BUCKET_NAME }} --delete
+        run: aws s3 sync dist/my-app/browser/ s3://${{ env.BUCKET_NAME_TEST }} --delete     
+
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/production'
+    needs: [Test]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Deploy static site to S3 bucket
+        run: aws s3 sync dist/my-app/browser/ s3://${{ env.BUCKET_NAME_PROD }} --delete
   
