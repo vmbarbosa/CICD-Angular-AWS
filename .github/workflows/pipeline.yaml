@@ -53,7 +53,7 @@ jobs:
       - name: Build
         run: npm run test
 
-   Deploy-Testing:
+  Deploy-Testing:
     runs-on: ubuntu-latest
     if: github.ref == 'refs/heads/testing'
     needs: [Test]
