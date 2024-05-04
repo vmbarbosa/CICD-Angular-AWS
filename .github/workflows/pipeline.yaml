@@ -12,7 +12,7 @@ on:
       - production
       - feature/pipelines
 jobs:
-    Build:
+  Build:
     runs-on: ubuntu-latest
     steps:
     
@@ -32,8 +32,8 @@ jobs:
       - name: list
         run: ls
       - name: script
-        run: ls dist/
-        
+        run: ls dist
+
   Deploy-Production:
     runs-on: ubuntu-latest
     steps:
