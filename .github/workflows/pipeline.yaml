@@ -29,10 +29,11 @@ jobs:
 
       - name: Build
         run: npm run build
-      - name:
+      - name: list
         run: ls
-      
-      - run: ls dist/
+      - name: script
+        run: ls dist/
+        
   Deploy-Production:
     runs-on: ubuntu-latest
     steps:
