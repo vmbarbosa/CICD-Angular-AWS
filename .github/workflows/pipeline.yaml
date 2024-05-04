@@ -1,0 +1,30 @@
+name: CICD Pipeline
+env:
+  AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY }}
+  AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_ACCESS_SECRET_KEY}}
+  AWS_REGION: "us-east-1"
+  BUCKET_NAME: "my-cicd-bucket-uninorte"
+on:
+  push:
+    branches:
+      - main
+      - testing
+      - production
+      - feature/pipelines
+jobs:
+  Deploy-Production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ env.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ env.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+      
+      - name: Deploy static site to S3 bucket
+        run: aws s3 sync . s3://${{ env.BUCKET_NAME }} --delete
+  
